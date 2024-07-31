@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://co5qejk5k1hne"]
+
+[ext_resource type="PackedScene" uid="uid://cb51ebvt0x3tb" path="res://scenes/editor.tscn" id="1_qhpk0"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="SubViewport" type="SubViewport" parent="."]
+size = Vector2i(318, 175)
+size_2d_override_stretch = true
+
+[node name="Editor" parent="SubViewport" instance=ExtResource("1_qhpk0")]

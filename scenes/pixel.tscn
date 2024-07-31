@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://oxtt4nfm7bf3"]
+
+[ext_resource type="Script" path="res://scripts/PixelScript.gd" id="1_6su67"]
+[ext_resource type="Texture2D" uid="uid://dcifut1r8vm88" path="res://assets/font.png" id="2_6rtyk"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_nwphn"]
+size = Vector2(6, 7)
+
+[node name="Pixel" type="Area2D"]
+script = ExtResource("1_6su67")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(3, 3.5)
+shape = SubResource("RectangleShape2D_nwphn")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(4, 3.5)
+texture = ExtResource("2_6rtyk")
+hframes = 26
+vframes = 15
+frame = 360
+
+[connection signal="mouse_entered" from="." to="." method="_on_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_mouse_exited"]
