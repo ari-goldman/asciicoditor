@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://b1vcmhts2d7xb"]
+
+[node name="SaveWindow" type="FileDialog"]
+physics_object_picking_sort = true
+title = "Save Piece"
+initial_position = 1
+size = Vector2i(874, 299)
+visible = true
+ok_button_text = "Save"
+dialog_close_on_escape = false
+access = 2
+filters = PackedStringArray("*.png")

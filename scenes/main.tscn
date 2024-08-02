@@ -1,17 +1,97 @@
-[gd_scene load_steps=2 format=3 uid="uid://co5qejk5k1hne"]
+[gd_scene load_steps=11 format=3 uid="uid://co5qejk5k1hne"]
 
 [ext_resource type="PackedScene" uid="uid://cb51ebvt0x3tb" path="res://scenes/editor.tscn" id="1_qhpk0"]
+[ext_resource type="Shader" path="res://assets/shaders/bloom.gdshader" id="3_ht250"]
+[ext_resource type="Script" path="res://scripts/ShaderController.gd" id="3_trfyo"]
+[ext_resource type="Shader" path="res://assets/shaders/scanline.gdshader" id="4_pxjn2"]
+[ext_resource type="Shader" path="res://assets/shaders/crt_curve.gdshader" id="5_sdv8r"]
+[ext_resource type="Shader" path="res://assets/shaders/camera.gdshader" id="6_eai80"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2tocy"]
+shader = ExtResource("4_pxjn2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_aa3jh"]
+shader = ExtResource("3_ht250")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_5ctl8"]
+shader = ExtResource("5_sdv8r")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ft6hq"]
+shader = ExtResource("6_eai80")
+shader_parameter/whiteness = 0.0
 
 [node name="Node2D" type="Node2D"]
 
-[node name="SubViewport" type="SubViewport" parent="."]
+[node name="BG" type="ColorRect" parent="."]
+offset_right = 319.0
+offset_bottom = 176.0
+scale = Vector2(5.96921, 5.69536)
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_right = 1590.0
+offset_bottom = 875.0
+stretch = true
+stretch_shrink = 5
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+physics_object_picking = true
 size = Vector2i(318, 175)
 size_2d_override_stretch = true
+render_target_update_mode = 4
 
-[node name="Editor" parent="SubViewport" instance=ExtResource("1_qhpk0")]
+[node name="Editor" parent="SubViewportContainer/SubViewport" instance=ExtResource("1_qhpk0")]
 
-[node name="TextureRect" type="TextureRect" parent="."]
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="Shader Controller" type="Node" parent="."]
+script = ExtResource("3_trfyo")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Scanlines" type="CanvasLayer" parent="Shader Controller"]
+layer = 2
+visible = false
+
+[node name="Scanlines" type="ColorRect" parent="Shader Controller/Scanlines"]
+material = SubResource("ShaderMaterial_2tocy")
+offset_right = 1628.0
+offset_bottom = 912.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Bloom" type="CanvasLayer" parent="Shader Controller"]
+layer = 3
+visible = false
+
+[node name="Bloom" type="ColorRect" parent="Shader Controller/Bloom"]
+material = SubResource("ShaderMaterial_aa3jh")
+offset_left = -13.0
+offset_top = -24.0
+offset_right = 1628.0
+offset_bottom = 902.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Curve" type="CanvasLayer" parent="Shader Controller"]
+layer = 4
+visible = false
+
+[node name="CRT Curve" type="ColorRect" parent="Shader Controller/Curve"]
+material = SubResource("ShaderMaterial_5ctl8")
+offset_left = -13.0
+offset_top = -24.0
+offset_right = 1624.0
+offset_bottom = 913.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
+[node name="Screenshot" type="CanvasLayer" parent="Shader Controller"]
+layer = 4
+
+[node name="Screenshot" type="ColorRect" parent="Shader Controller/Screenshot"]
+material = SubResource("ShaderMaterial_ft6hq")
+offset_left = -13.0
+offset_top = -24.0
+offset_right = 1624.0
+offset_bottom = 913.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true

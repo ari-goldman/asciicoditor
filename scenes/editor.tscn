@@ -1,24 +1,14 @@
-[gd_scene load_steps=6 format=3 uid="uid://cb51ebvt0x3tb"]
+[gd_scene load_steps=4 format=3 uid="uid://cb51ebvt0x3tb"]
 
 [ext_resource type="Script" path="res://scripts/LogicScript.gd" id="1_2oyj1"]
 [ext_resource type="PackedScene" uid="uid://oxtt4nfm7bf3" path="res://scenes/pixel.tscn" id="2_f2y5n"]
 [ext_resource type="PackedScene" uid="uid://bvhmqov2w11su" path="res://scenes/selector.tscn" id="2_ltwjc"]
-[ext_resource type="Shader" path="res://assets/shaders/bloom.gdshader" id="4_xihwr"]
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_6k0rb"]
-shader = ExtResource("4_xihwr")
 
 [node name="Editor" type="Node2D"]
 
 [node name="Camera" type="Camera2D" parent="."]
 unique_name_in_owner = true
 position = Vector2(159, 87.5)
-
-[node name="BG" type="ColorRect" parent="."]
-offset_right = 319.0
-offset_bottom = 176.0
-mouse_filter = 2
-color = Color(0, 0, 0, 1)
 
 [node name="Logic" type="Node" parent="."]
 unique_name_in_owner = true
@@ -37,15 +27,10 @@ z_index = 5
 z_as_relative = false
 position = Vector2(160, 96)
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-visible = false
-
-[node name="ColorRect" type="ColorRect" parent="CanvasLayer"]
-material = SubResource("ShaderMaterial_6k0rb")
-offset_left = -13.0
-offset_top = -24.0
-offset_right = 372.0
-offset_bottom = 205.0
+[node name="BG" type="ColorRect" parent="."]
+offset_right = 319.0
+offset_bottom = 176.0
 mouse_filter = 2
+color = Color(0, 0, 0, 1)
 
 [connection signal="ready" from="Logic" to="Logic" method="_on_ready"]

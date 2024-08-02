@@ -1,20 +1,20 @@
 extends Node
+class_name Logic
 
 const PIXEL := preload("res://scenes/pixel.tscn")
 @onready var grid := %Grid
 @onready var selector := %Selector
-@onready var darkener := $"../Darkener"
-
-const BOUNDS := Vector2()
 
 func _on_ready() -> void:
 	call_deferred("setup_grid")
+	
+	Global.logic = self
 	
 	var view_size: Vector2 = get_viewport().get_visible_rect().size
 	selector.position = view_size / 2.0 + view_size * 2 * Vector2.DOWN
 
 var tween: Tween
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("selector"):
 		#DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
 		
@@ -52,12 +52,17 @@ func setup_grid() -> void:
 	for child: Node in grid.get_children():
 		child.queue_free()
 	
-	var pos := Vector2(0.0, 0.0)
-	var view_size: Vector2 = get_viewport().get_visible_rect().size
 	for x in range(0, 53):
 		for y in range(0, 25):
 			var instance: Pixel = PIXEL.instantiate()
 			instance.position = Vector2(x * 6, y * 7)
 			grid.add_child(instance)
+
+func prepare_save() -> void:
+	for pixel: Pixel in grid.get_children():
+		pixel.prepare_save()
 		
+	var view_size: Vector2 = get_viewport().get_visible_rect().size
+	selector.position = view_size / 2.0 + view_size * 2 * Vector2.DOWN
+	
 	

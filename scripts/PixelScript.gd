@@ -25,11 +25,8 @@ func _ready() -> void:
 	current_index = Global.DEFAULT_INDEX
 	color_index = Global.selected_color_index
 	set_frame(current_index)
-	Global.color_change.connect(_on_global_color_change)
+	Global.selection_change.connect(_on_global_selection_change)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 
 func set_frame(frame: int) -> void:
 	sprite.frame = frame % FRAME_COUNT
@@ -87,6 +84,13 @@ func modulate_sprite(color: Color, from_white: bool = false) -> void:
 			.set_ease(Tween.EASE_OUT) \
 			.set_trans(Tween.TRANS_CUBIC)
 
-func _on_global_color_change() -> void:
+func _on_global_selection_change() -> void:
 	if hovered_on:
 		_on_mouse_entered()
+
+func prepare_save() -> void:
+	_on_mouse_exited()
+	#sprite.modulate = Global.COLORS[color_index]
+	if(sprite.modulate != Color(1.0, 1.0, 1.0, 1.0)):
+		print(sprite.modulate)
+	

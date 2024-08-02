@@ -11,7 +11,7 @@ func _on_ready() -> void:
 	pass
 
 
-func _input_event(viewport: Viewport, event: InputEvent, shape_idx: int) -> void:
+func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if Input.is_action_pressed("draw"):
 		Global.selected_index = position_to_index(self.to_local(event.position))
 	if Input.is_action_pressed("secondary_draw"):
