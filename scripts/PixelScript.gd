@@ -6,25 +6,9 @@ const FRAME_COUNT: int = 390
 signal clicked_on(pixel: Pixel)
 
 @onready var sprite: Sprite2D = $Sprite2D
-@onready var dark: bool = false
-	#set(value):
-		#if value:
-			#modulate_sprite(Global.COLORS[color_index].darkened(0.8))
-		#else:
-			#modulate_sprite(Global.COLORS[color_index])
-		#dark = value
 		
 var color_index: int
-	#set(value):
-		#if Global.register_changes:
-			#Global.changes.add_change(Change.new(grid_index, character_index, color_index, character_index, value))
-			##Global.changes.add_change(Change.new(grid_index, ))
-		#color_index = value
 var character_index: int
-	#set(value):
-		#if Global.register_changes:
-			#Global.changes.add_change(Change.new(grid_index, character_index, color_index, value, color_index))
-		#character_index = value
 var hovered_on: bool = false
 var grid_index: int
 
@@ -64,6 +48,9 @@ func _on_mouse_entered() -> void:
 	hovered_on = true
 	
 	if Input.is_action_pressed("selector"):
+		return
+		
+	if Input.is_action_pressed("dropper"):
 		return
 	
 	var primary_draw: bool = Input.is_action_pressed("draw")
@@ -134,13 +121,11 @@ func _edit_pixel(new_character_index: int, new_color_index: int, permanent: bool
 	_set_color(new_color_index, permanent, permanent)
 
 func refresh_pixel() -> void:
+	_set_character(character_index, false)
+	_set_color(color_index, false) # ensure color gets reset
 	if hovered_on:
 		_on_mouse_entered()
-		return
-	
-	_set_character(character_index, true)
-	_set_color(color_index, true)
-	
+
 var color_tween: Tween
 func _modulate_sprite_tween(color: Color, from_white: bool = false) -> void:
 	if color_tween:
@@ -161,8 +146,8 @@ func lighten() -> void:
 	_modulate_sprite_tween(Global.COLORS[color_index], false)	
 
 func prepare_save() -> void:
-	_edit_pixel(character_index, color_index, false)
-	#sprite.modulate = Global.COLORS[color_index]
+	_set_character(character_index, false)
+	_set_color(color_index, false, false)
 	if(sprite.modulate != Color(1.0, 1.0, 1.0, 1.0)):
 		push_error(sprite.modulate)
 	

@@ -31,8 +31,6 @@ func _process(_delta: float) -> void:
 			pixel.darken()
 		
 	if Input.is_action_just_released("selector"):
-		#DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_HIDDEN)
-		
 		var view_size: Vector2 = get_viewport().get_visible_rect().size
 		
 		if tween:
@@ -42,8 +40,7 @@ func _process(_delta: float) -> void:
 			.set_ease(Tween.EASE_IN_OUT) \
 			.set_trans(Tween.TRANS_QUAD)
 			
-		for pixel: Pixel in grid.get_children():
-			pixel.refresh_pixel()
+		refresh_all()
 
 func _setup_grid() -> void:
 	for child: Node in grid.get_children():
@@ -60,10 +57,13 @@ func _setup_grid() -> void:
 			i += 1
 
 func prepare_save() -> void:
-	for pixel: Pixel in grid.get_children():
+	for pixel: Pixel in grid_array:
 		pixel.prepare_save()
 		
 	var view_size: Vector2 = get_viewport().get_visible_rect().size
 	selector.position = view_size / 2.0 + view_size * 2 * Vector2.DOWN
 	
 	
+func refresh_all() -> void:
+	for pixel: Pixel in grid_array:
+			pixel.refresh_pixel()

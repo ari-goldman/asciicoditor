@@ -30,14 +30,6 @@ var undo_redo: UndoRedo = UndoRedo.new()
 signal selection_change
 signal save_flash
 
-func _ready() -> void:
-	pass
-	#var dropper_image: Image = DROPPER.get_image()
-	#dropper_image.resize(16, 16, Image.INTERPOLATE_NEAREST)
-	#DROPPER.
-	#DROPPER.get_image().resize(16, 16, Image.INTERPOLATE_NEAREST)
-	#print(type_string(typeof(DROPPER)))
-
 func _input(event: InputEvent) -> void:
 	if event.is_action_released("decrease_index"):
 		selected_color_index = posmod(selected_color_index - 1, COLORS.size())
@@ -51,14 +43,16 @@ func _input(event: InputEvent) -> void:
 		undo_redo.redo()
 	elif event.is_action_pressed("undo"):
 		undo_redo.undo()
-	if Input.is_action_pressed("dropper"):
+	if Input.is_action_just_pressed("dropper"):
+		logic.refresh_all()
 		Input.set_default_cursor_shape(Input.CURSOR_HELP)
-	else:
+	elif Input.is_action_just_released("dropper"):
+		logic.refresh_all()
 		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
-
 
 var save: FileDialog
 func save_image() -> void:
+	undo_redo.clear_history()
 	logic.prepare_save()
 	await get_tree().create_timer(0.1).timeout
 	var image: Image = get_viewport().get_texture().get_image()
@@ -81,9 +75,7 @@ func save_image() -> void:
 		save.connect("confirmed", func save() -> void:
 			if(str(save.current_file).trim_suffix(".png").is_empty()):
 				save.current_file = "asciicoditor-%s.png" % Time.get_datetime_string_from_system()
-			print("cur file: " + save.current_file)
-			print(save.current_path)
-			image.save_png("/Users/agoldman/Desktop/asciicoditor-2024-08-01T21:20:56.png")
+			image.save_png(save.current_path)
 			save.queue_free()
 			save = null
 		)
