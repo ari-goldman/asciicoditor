@@ -6,91 +6,163 @@ const FRAME_COUNT: int = 390
 signal clicked_on(pixel: Pixel)
 
 @onready var sprite: Sprite2D = $Sprite2D
-@onready var dark := false :
-	set(value):
-		if value:
-			modulate_sprite(Global.COLORS[color_index].darkened(0.8))
-		else:
-			modulate_sprite(Global.COLORS[color_index])
-		dark = value
+@onready var dark: bool = false
+	#set(value):
+		#if value:
+			#modulate_sprite(Global.COLORS[color_index].darkened(0.8))
+		#else:
+			#modulate_sprite(Global.COLORS[color_index])
+		#dark = value
 		
 var color_index: int
-var current_index: int
+	#set(value):
+		#if Global.register_changes:
+			#Global.changes.add_change(Change.new(grid_index, character_index, color_index, character_index, value))
+			##Global.changes.add_change(Change.new(grid_index, ))
+		#color_index = value
+var character_index: int
+	#set(value):
+		#if Global.register_changes:
+			#Global.changes.add_change(Change.new(grid_index, character_index, color_index, value, color_index))
+		#character_index = value
 var hovered_on: bool = false
+var grid_index: int
 
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	current_index = Global.DEFAULT_INDEX
-	color_index = Global.selected_color_index
-	set_frame(current_index)
-	Global.selection_change.connect(_on_global_selection_change)
+	_set_color(Global.selected_color_index, true)
+	_set_character(Global.DEFAULT_INDEX, true)
+	Global.selection_change.connect(_color_update)
 
 
-func set_frame(frame: int) -> void:
-	sprite.frame = frame % FRAME_COUNT
+func _color_update() -> void:
+	if Input.is_action_pressed("selector"):
+		return
 	
-func increase_frame() -> void:
-	set_frame((sprite.frame + 1) % FRAME_COUNT)
+	if not hovered_on:
+		return
+	
+	_set_color(Global.selected_color_index, false)
+
+
+func _set_character(frame: int, permanent: bool) -> void:
+	if permanent:
+		character_index = frame % FRAME_COUNT
+		sprite.frame = character_index
+	else:
+		sprite.frame = frame % FRAME_COUNT
+
+func _set_color(_color_index: int, permanent: bool, from_white: bool = false) -> void:
+	if permanent:
+		color_index = _color_index % Global.COLORS.size()
+	_modulate_sprite_tween(Global.COLORS[_color_index], from_white)
+
 
 func _on_mouse_entered() -> void:
 	hovered_on = true
-	if not Input.is_action_pressed("selector"):
-		if Input.is_action_pressed("draw"):
-			edit_pixel(Global.selected_index)
-		if Input.is_action_pressed("secondary_draw"):
-			edit_pixel(Global.selected_secondary_index)
-				
-	set_frame(Global.selected_index)
 	
-	if (Global.selected_index != current_index or Global.selected_color_index != color_index) and not dark:
-		sprite.modulate = Global.COLORS[Global.selected_color_index].darkened(0.5)
-
+	if Input.is_action_pressed("selector"):
+		return
+	
+	var primary_draw: bool = Input.is_action_pressed("draw")
+	var secondary_draw: bool = Input.is_action_pressed("secondary_draw")
+	
+	if primary_draw:
+		_edit_pixel(Global.selected_index, Global.selected_color_index, true)
+		return
+	
+	if secondary_draw:
+		_edit_pixel(Global.selected_secondary_index, Global.selected_color_index, true)
+		return
+	
+	_edit_pixel(Global.selected_index, Global.selected_color_index, false)
 
 func _on_mouse_exited() -> void:
 	hovered_on = false
-	set_frame(current_index)
-	if not dark:
-		sprite.modulate = Global.COLORS[color_index]
+	if Input.is_action_pressed("selector"):
+		return
+	
+	refresh_pixel()
 
-func _input(event: InputEvent) -> void:
-	if hovered_on and not Input.is_action_pressed("selector"):
-		if event.is_action_pressed("draw"):
-			edit_pixel(Global.selected_index)
-		if event.is_action_pressed("secondary_draw"):
-			edit_pixel(Global.selected_secondary_index)
+func _input(_event: InputEvent) -> void:
+	if Input.is_action_pressed("selector"):
+		_set_character(character_index, false)
+		return
+	
+	if not hovered_on:
+		return
+		
+	var primary_draw: bool = Input.is_action_pressed("draw")
+	var secondary_draw: bool = Input.is_action_pressed("secondary_draw")
 
-func edit_pixel(new_character_index: int) -> void:
-	set_frame(new_character_index)
-	color_index = Global.selected_color_index
-	current_index = new_character_index % FRAME_COUNT
-	if not dark:
-		modulate_sprite(Global.COLORS[color_index], true)
+	if not primary_draw and not secondary_draw:
+		return
+	
+	if Input.is_action_pressed("dropper"):
+		if primary_draw:
+			Global.selected_index = character_index
+		else:
+			Global.selected_secondary_index = character_index
+		Global.selected_color_index = color_index
+	
+	if primary_draw:
+		_edit_pixel(Global.selected_index, Global.selected_color_index, true)
+		return
+		
+	if secondary_draw:
+		_edit_pixel(Global.selected_secondary_index, Global.selected_color_index, true)
+		return
+	
+	push_error("How did we get here!?")
 
-var darken_tween: Tween
-func modulate_sprite(color: Color, from_white: bool = false) -> void:
-	if darken_tween:
-		darken_tween.kill()
-	darken_tween = get_tree().create_tween()
-	darken_tween.set_parallel()
-	if from_white:
-		darken_tween.tween_property(sprite, "modulate", color, 0.4) \
-			.set_ease(Tween.EASE_OUT) \
-			.set_trans(Tween.TRANS_CUBIC) \
-			.from(Color(1.0, 1.0, 1.0))
-	else:
-		darken_tween.tween_property(sprite, "modulate", color, 0.4) \
-			.set_ease(Tween.EASE_OUT) \
-			.set_trans(Tween.TRANS_CUBIC)
+func _edit_pixel(new_character_index: int, new_color_index: int, permanent: bool) -> void:
+	if new_character_index == character_index and new_color_index == color_index:
+		return
+	
+	if permanent:
+		var ur: UndoRedo = Global.undo_redo
+		ur.create_action("")
+		ur.add_do_method(_set_character.bind(new_character_index, true))
+		ur.add_do_method(_set_color.bind(new_color_index, true))
+		ur.add_undo_method(_set_character.bind(character_index, true))
+		ur.add_undo_method(_set_color.bind(color_index, true))
+		ur.commit_action(false)
+		
+	_set_character(new_character_index, permanent)
+	_set_color(new_color_index, permanent, permanent)
 
-func _on_global_selection_change() -> void:
+func refresh_pixel() -> void:
 	if hovered_on:
 		_on_mouse_entered()
+		return
+	
+	_set_character(character_index, true)
+	_set_color(color_index, true)
+	
+var color_tween: Tween
+func _modulate_sprite_tween(color: Color, from_white: bool = false) -> void:
+	if color_tween:
+		color_tween.kill()
+	color_tween = create_tween()
+	color_tween.bind_node(self)
+	
+	var from_color: Color = Color(1.0, 1.0, 1.0) if from_white else sprite.modulate 
+	color_tween.tween_property(sprite, "modulate", color, 0.4) \
+		.set_ease(Tween.EASE_OUT) \
+		.set_trans(Tween.TRANS_CUBIC) \
+		.from(from_color)
+
+func darken() -> void:
+	_modulate_sprite_tween(Global.COLORS[color_index].darkened(0.7), false)
+
+func lighten() -> void:
+	_modulate_sprite_tween(Global.COLORS[color_index], false)	
 
 func prepare_save() -> void:
-	_on_mouse_exited()
+	_edit_pixel(character_index, color_index, false)
 	#sprite.modulate = Global.COLORS[color_index]
 	if(sprite.modulate != Color(1.0, 1.0, 1.0, 1.0)):
-		print(sprite.modulate)
+		push_error(sprite.modulate)
 	

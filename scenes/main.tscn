@@ -1,14 +1,18 @@
-[gd_scene load_steps=11 format=3 uid="uid://co5qejk5k1hne"]
+[gd_scene load_steps=13 format=3 uid="uid://co5qejk5k1hne"]
 
 [ext_resource type="PackedScene" uid="uid://cb51ebvt0x3tb" path="res://scenes/editor.tscn" id="1_qhpk0"]
 [ext_resource type="Shader" path="res://assets/shaders/bloom.gdshader" id="3_ht250"]
 [ext_resource type="Script" path="res://scripts/ShaderController.gd" id="3_trfyo"]
-[ext_resource type="Shader" path="res://assets/shaders/scanline.gdshader" id="4_pxjn2"]
+[ext_resource type="Shader" path="res://assets/shaders/scanlines.gdshader" id="4_b2glp"]
+[ext_resource type="Shader" path="res://assets/shaders/aberration.gdshader" id="4_pxjn2"]
 [ext_resource type="Shader" path="res://assets/shaders/crt_curve.gdshader" id="5_sdv8r"]
 [ext_resource type="Shader" path="res://assets/shaders/camera.gdshader" id="6_eai80"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_2tocy"]
 shader = ExtResource("4_pxjn2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4d2jm"]
+shader = ExtResource("4_b2glp")
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_aa3jh"]
 shader = ExtResource("3_ht250")
@@ -47,19 +51,30 @@ render_target_update_mode = 4
 [node name="Shader Controller" type="Node" parent="."]
 script = ExtResource("3_trfyo")
 
-[node name="Scanlines" type="CanvasLayer" parent="Shader Controller"]
-layer = 2
+[node name="Aberration" type="CanvasLayer" parent="Shader Controller"]
+layer = 10
 visible = false
 
-[node name="Scanlines" type="ColorRect" parent="Shader Controller/Scanlines"]
+[node name="Aberration" type="ColorRect" parent="Shader Controller/Aberration"]
 material = SubResource("ShaderMaterial_2tocy")
 offset_right = 1628.0
 offset_bottom = 912.0
 mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
+[node name="Scanlines" type="CanvasLayer" parent="Shader Controller"]
+layer = 11
+visible = false
+
+[node name="Scanlines" type="ColorRect" parent="Shader Controller/Scanlines"]
+material = SubResource("ShaderMaterial_4d2jm")
+offset_right = 1628.0
+offset_bottom = 912.0
+mouse_filter = 2
+metadata/_edit_use_anchors_ = true
+
 [node name="Bloom" type="CanvasLayer" parent="Shader Controller"]
-layer = 3
+layer = 12
 visible = false
 
 [node name="Bloom" type="ColorRect" parent="Shader Controller/Bloom"]
@@ -72,7 +87,7 @@ mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="Curve" type="CanvasLayer" parent="Shader Controller"]
-layer = 4
+layer = 13
 visible = false
 
 [node name="CRT Curve" type="ColorRect" parent="Shader Controller/Curve"]
@@ -85,7 +100,7 @@ mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
 [node name="Screenshot" type="CanvasLayer" parent="Shader Controller"]
-layer = 4
+layer = 100
 
 [node name="Screenshot" type="ColorRect" parent="Shader Controller/Screenshot"]
 material = SubResource("ShaderMaterial_ft6hq")

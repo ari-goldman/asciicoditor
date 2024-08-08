@@ -3,6 +3,7 @@ extends Node
 const SAVE_WINDOW = preload("res://scenes/save_window.tscn")
 
 const DEFAULT_INDEX: int = 360
+const DROPPER = preload("res://assets/dropper.png")
 
 const COLORS := [
 	Color("#ffffff"),
@@ -19,15 +20,23 @@ const COLORS := [
 
 var logic: Logic
 
-var selected_index: int = 195:
-	set(new):
-		selected_index = new
-		selection_change.emit()
+var selected_index: int = 195
 var selected_color_index: int = 0
 var selected_secondary_index: int = DEFAULT_INDEX
 
+#var changes: ChangeStack = ChangeStack.new()
+var undo_redo: UndoRedo = UndoRedo.new()
+
 signal selection_change
 signal save_flash
+
+func _ready() -> void:
+	pass
+	#var dropper_image: Image = DROPPER.get_image()
+	#dropper_image.resize(16, 16, Image.INTERPOLATE_NEAREST)
+	#DROPPER.
+	#DROPPER.get_image().resize(16, 16, Image.INTERPOLATE_NEAREST)
+	#print(type_string(typeof(DROPPER)))
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_released("decrease_index"):
@@ -38,8 +47,16 @@ func _input(event: InputEvent) -> void:
 		selection_change.emit()
 	if event.is_action_pressed("save"):
 		save_image()
-			
-		
+	if event.is_action_pressed("redo"):
+		undo_redo.redo()
+	elif event.is_action_pressed("undo"):
+		undo_redo.undo()
+	if Input.is_action_pressed("dropper"):
+		Input.set_default_cursor_shape(Input.CURSOR_HELP)
+	else:
+		Input.set_default_cursor_shape(Input.CURSOR_CROSS)
+
+
 var save: FileDialog
 func save_image() -> void:
 	logic.prepare_save()
@@ -72,5 +89,3 @@ func save_image() -> void:
 		)
 		
 		add_child(save)
-
-

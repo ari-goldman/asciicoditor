@@ -5,7 +5,7 @@ shader_type canvas_item;
 uniform sampler2D screen_texture : hint_screen_texture, repeat_disable, filter_nearest;
 
 vec2 remap_uv(vec2 uv){
-	vec2 curvature = vec2(4.0, 4.0);
+	vec2 curvature = vec2(7.0, 5.0);
 	uv = 2.0 * uv - 1.0;
 	vec2 offset = abs(uv.yx) / curvature;
 	uv = uv + uv * offset * offset;

@@ -3,10 +3,11 @@ class_name Logic
 
 const PIXEL := preload("res://scenes/pixel.tscn")
 @onready var grid := %Grid
+@onready var grid_array: Array[Pixel] = []
 @onready var selector := %Selector
 
 func _on_ready() -> void:
-	call_deferred("setup_grid")
+	call_deferred("_setup_grid")
 	
 	Global.logic = self
 	
@@ -16,8 +17,6 @@ func _on_ready() -> void:
 var tween: Tween
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("selector"):
-		#DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_VISIBLE)
-		
 		var view_size: Vector2 = get_viewport().get_visible_rect().size
 		
 		if tween:
@@ -29,7 +28,7 @@ func _process(_delta: float) -> void:
 			.set_trans(Tween.TRANS_QUAD)
 			
 		for pixel: Pixel in grid.get_children():
-			pixel.dark = true
+			pixel.darken()
 		
 	if Input.is_action_just_released("selector"):
 		#DisplayServer.mouse_set_mode(DisplayServer.MOUSE_MODE_HIDDEN)
@@ -44,19 +43,21 @@ func _process(_delta: float) -> void:
 			.set_trans(Tween.TRANS_QUAD)
 			
 		for pixel: Pixel in grid.get_children():
-			if not pixel.hovered_on:
-				pixel.modulate_sprite(Color(1.0, 1.0, 1.0))
-			pixel.dark = false
+			pixel.refresh_pixel()
 
-func setup_grid() -> void:
+func _setup_grid() -> void:
 	for child: Node in grid.get_children():
 		child.queue_free()
 	
+	var i: int = 0
 	for x in range(0, 53):
 		for y in range(0, 25):
 			var instance: Pixel = PIXEL.instantiate()
 			instance.position = Vector2(x * 6, y * 7)
+			instance.grid_index = i
 			grid.add_child(instance)
+			grid_array.append(instance)
+			i += 1
 
 func prepare_save() -> void:
 	for pixel: Pixel in grid.get_children():

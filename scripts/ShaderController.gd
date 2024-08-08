@@ -3,6 +3,7 @@ extends Node
 @onready var editor: Node2D= $"../SubViewportContainer/SubViewport/Editor"
 
 @onready var shaders := {
+	"aberration" = $Aberration,
 	"scanlines" = $Scanlines,
 	"bloom" = $Bloom,
 	"curve" = $Curve,
@@ -12,7 +13,9 @@ func _ready() -> void:
 	Global.save_flash.connect(save)
 
 func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("scanlines"):
+	if event.is_action_pressed("aberration"):
+		shaders["aberration"].visible = not shaders["aberration"].visible
+	elif event.is_action_pressed("scanlines"):
 		shaders["scanlines"].visible = not shaders["scanlines"].visible
 	elif event.is_action_pressed("bloom"):
 		shaders["bloom"].visible = not shaders["bloom"].visible
