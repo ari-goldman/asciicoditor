@@ -90,9 +90,10 @@ func _input(_event: InputEvent) -> void:
 	if Input.is_action_pressed("dropper"):
 		if primary_draw:
 			Global.selected_index = character_index
+			Global.selected_color_index = color_index
 		else:
 			Global.selected_secondary_index = character_index
-		Global.selected_color_index = color_index
+			Global.selected_color_index = color_index
 	
 	if primary_draw:
 		_edit_pixel(Global.selected_index, Global.selected_color_index, true)

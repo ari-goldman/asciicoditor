@@ -63,7 +63,6 @@ func prepare_save() -> void:
 	var view_size: Vector2 = get_viewport().get_visible_rect().size
 	selector.position = view_size / 2.0 + view_size * 2 * Vector2.DOWN
 	
-	
 func refresh_all() -> void:
 	for pixel: Pixel in grid_array:
 			pixel.refresh_pixel()
