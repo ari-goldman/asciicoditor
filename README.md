@@ -11,4 +11,3 @@ Try it out on the [itch.io](https://goobst.itch.io/asciicoditor) page!
 <img src=https://github.com/user-attachments/assets/f22e12a6-6eb1-462d-a04a-216ba7a84410 width=800>
 
 ---
-> *(yes I know Unicode includes all the ASCII characters, but people it ASCII Art, not Unicode Art)*
